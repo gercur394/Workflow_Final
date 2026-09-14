@@ -1,0 +1,437 @@
+{
+  "name": "Sistema de Reclamos - Envío Final",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0fd20e3c-d02c-4b85-a9d4-f2f99e9a1fd7",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appk66TkkmDFTturs",
+          "mode": "list",
+          "cachedResultName": "Sistema de Reclamos Fintech",
+          "cachedResultUrl": "https://airtable.com/appk66TkkmDFTturs"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblBAWqPs7A350WwC",
+          "mode": "list",
+          "cachedResultName": "Reclamos",
+          "cachedResultUrl": "https://airtable.com/appk66TkkmDFTturs/tblBAWqPs7A350WwC"
+        },
+        "filterByFormula": "   AND({Estado} = 'Pendiente Aprobación Humana', {Aprobado} = TRUE())",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "110e35a7-810e-4d5d-9cc0-14520c522593",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "18rZGV3jAA6ElXWZ",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "=   {{ $json.fields[\"Email (from Cliente)\"][0] }}",
+        "subject": "=   Actualización sobre tu reclamo {{ $json.fields.ID_Reclamo }}",
+        "message": "=   Hola,     Te escribimos para informarte que tu reclamo fue revisado y aprobado.     Detalle: {{ $json.fields.Mensaje_reclamo }}    Monto: ${{ $json.fields.Monto }}     El reembolso correspondiente será procesado a la brevedad.     Saludos,    Equipo de Atención al Cliente",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        688,
+        -96
+      ],
+      "id": "2a954e72-a53d-4518-9018-9b23b02e20e2",
+      "name": "Send a message",
+      "webhookId": "ca9aaf69-7eac-4945-8334-7abdad1cedd4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "viFghO2gkTiukvlW",
+          "name": "Gmail - Cuenta Principal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appk66TkkmDFTturs",
+          "mode": "list",
+          "cachedResultName": "Sistema de Reclamos Fintech",
+          "cachedResultUrl": "https://airtable.com/appk66TkkmDFTturs"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblBAWqPs7A350WwC",
+          "mode": "list",
+          "cachedResultName": "Reclamos",
+          "cachedResultUrl": "https://airtable.com/appk66TkkmDFTturs/tblBAWqPs7A350WwC"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Search records').item.json.id }}",
+            "Estado": "Enviado"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "ID_Reclamo",
+              "displayName": "ID_Reclamo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Cliente",
+              "displayName": "Cliente",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email (from Cliente)",
+              "displayName": "Email (from Cliente)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Mensaje_reclamo",
+              "displayName": "Mensaje_reclamo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Monto",
+              "displayName": "Monto",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Fecha_transaccion",
+              "displayName": "Fecha_transaccion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Procesado por IA",
+                  "value": "Procesado por IA"
+                },
+                {
+                  "name": "Pendiente Aprobación Humana",
+                  "value": "Pendiente Aprobación Humana"
+                },
+                {
+                  "name": "Aprobado",
+                  "value": "Aprobado"
+                },
+                {
+                  "name": "Rechazado",
+                  "value": "Rechazado"
+                },
+                {
+                  "name": "Enviado",
+                  "value": "Enviado"
+                },
+                {
+                  "name": "Error",
+                  "value": "Error"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Clasificacion_IA",
+              "displayName": "Clasificacion_IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Justificacion_IA",
+              "displayName": "Justificacion_IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Aprobado",
+              "displayName": "Aprobado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Log_error",
+              "displayName": "Log_error",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ultima_Modificacion",
+              "displayName": "Ultima_Modificacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        0
+      ],
+      "id": "954486cc-bb2d-4baf-927f-df0f6045af8d",
+      "name": "Update record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "18rZGV3jAA6ElXWZ",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9c0c36f3-aca9-40e7-9122-263fb67637db",
+              "leftValue": "={{ $json.fields.Clasificacion_IA }}",
+              "rightValue": "reembolso",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "8307b154-45d3-43d9-9c99-f292aa799175",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "=   {{ $json.fields[\"Email (from Cliente)\"][0] }}",
+        "subject": "=   Actualización sobre tu reclamo {{ $json.fields.ID_Reclamo }}",
+        "message": "=Hola,\n\nTe escribimos para informarte sobre el estado de tu reclamo.\n\nDetalle: {{ $json.fields.Mensaje_reclamo }}\nMonto: ${{ $json.fields.Monto }}\n\nLuego de revisar tu caso, no corresponde procesar un reembolso para esta transacción.\nSi considerás que esto es un error, podés responder a este mail para que un agente lo revise nuevamente.\n\nSaludos,\nEquipo de Atención al Cliente",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        688,
+        48
+      ],
+      "id": "b8b01556-1ab6-4027-bac9-d97ebcca2bd0",
+      "name": "Send a message1",
+      "webhookId": "ca9aaf69-7eac-4945-8334-7abdad1cedd4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "viFghO2gkTiukvlW",
+          "name": "Gmail - Cuenta Principal"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2b862a71-a030-4469-936e-503fb9db0517",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "be3f99d3eaeec153565fdfcb4394d46abbedc428bbac217b654428d7a5fdb428"
+  },
+  "nodeGroups": [],
+  "id": "L8XjPWCQhnHtsaw1",
+  "tags": []
+}
